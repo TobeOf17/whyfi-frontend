@@ -1,35 +1,38 @@
-export default function ToggleBar({ mode, onModeChange, dollarMode, onDollarModeChange }) {
-  return (
-      <div className="toggle-row">
-        <div className="toggle-group">
-          <button
-              className={mode === 'securities' ? 'toggle toggle--active' : 'toggle'}
-              onClick={() => onModeChange('securities')}
-          >
-            Investing in securities
-          </button>
-          <button
-              className={mode === 'breakeven' ? 'toggle toggle--active' : 'toggle'}
-              onClick={() => onModeChange('breakeven')}
-          >
-            Break-even
-          </button>
-        </div>
+const MODES = [
+    { id: 'securities', label: 'Securities' },
+    { id: 'breakeven', label: 'Break-even' },
+    { id: 'timing', label: 'Start now vs. wait' }
+];
 
-        <div className="toggle-group">
-          <button
-              className={dollarMode === 'nominal' ? 'toggle toggle--active' : 'toggle'}
-              onClick={() => onDollarModeChange('nominal')}
-          >
-            Nominal
-          </button>
-          <button
-              className={dollarMode === 'real' ? 'toggle toggle--active' : 'toggle'}
-              onClick={() => onDollarModeChange('real')}
-          >
-            Real
-          </button>
+export default function ToggleBar({ mode, onModeChange, dollarMode, onDollarModeChange }) {
+    return (
+        <div className="toggle-row">
+            <div className="toggle-group">
+                {MODES.map((m) => (
+                    <button
+                        key={m.id}
+                        className={mode === m.id ? 'toggle toggle--active' : 'toggle'}
+                        onClick={() => onModeChange(m.id)}
+                    >
+                        {m.label}
+                    </button>
+                ))}
+            </div>
+
+            <div className="toggle-group">
+                <button
+                    className={dollarMode === 'nominal' ? 'toggle toggle--active' : 'toggle'}
+                    onClick={() => onDollarModeChange('nominal')}
+                >
+                    Nominal
+                </button>
+                <button
+                    className={dollarMode === 'real' ? 'toggle toggle--active' : 'toggle'}
+                    onClick={() => onDollarModeChange('real')}
+                >
+                    Real
+                </button>
+            </div>
         </div>
-      </div>
-  );
+    );
 }

@@ -405,3 +405,340 @@ body {
   font-family: var(--font-mono);
   margin-top: var(--gap-sm);
 }
+
+/* ---- v2: navigation ---- */
+.nav {
+  display: flex;
+  gap: var(--gap-lg);
+  margin-bottom: var(--gap-lg);
+}
+
+.nav__item {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-faint);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0 0 10px;
+  cursor: pointer;
+}
+
+.nav__item:hover {
+  color: var(--color-ink);
+}
+
+.nav__item--active {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-accent-strong);
+}
+
+/* ---- v2: visual hierarchy ---- */
+.highlight-section {
+  background: var(--color-accent);
+  color: #f4f6f2;
+  border-radius: var(--radius);
+  padding: var(--gap-md) var(--gap-lg);
+  margin-bottom: var(--gap-lg);
+}
+
+.highlight-section .section-label {
+  color: #a9c4b3;
+}
+
+.highlight-section__title {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  margin: 0 0 var(--gap-sm);
+  color: #ffffff;
+}
+
+.highlight-section p {
+  margin: 0 0 var(--gap-sm);
+  line-height: 1.7;
+  font-size: 14px;
+  color: #e5ece7;
+}
+
+.highlight-section p:last-child {
+  margin-bottom: 0;
+}
+
+.highlight-section strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.highlight-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.highlight-list li {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #e5ece7;
+  padding-left: 16px;
+  position: relative;
+}
+
+.highlight-list li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: #a9c4b3;
+  font-family: var(--font-mono);
+}
+
+.plain-section {
+  padding: 0;
+  margin-bottom: var(--gap-lg);
+}
+
+.plain-section .section-label {
+  margin-bottom: var(--gap-sm);
+}
+
+/* ---- v2: financial values are serif, not mono ---- */
+.stat__value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 25px;
+  color: var(--color-accent-strong);
+  margin: 0;
+  border-top: 1px solid var(--color-border);
+  padding-top: 8px;
+  font-variant-numeric: normal;
+}
+
+.hero-figure {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--color-ink);
+}
+
+/* ---- v2: remove number input spin arrows ---- */
+.control-textbox::-webkit-outer-spin-button,
+.control-textbox::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.control-textbox[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* ---- v2: what-if chips ---- */
+.whatif-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-xs);
+}
+
+.whatif-chip {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg);
+  color: var(--color-ink-muted);
+  cursor: pointer;
+}
+
+.whatif-chip:hover {
+  border-color: var(--color-accent-strong);
+  color: var(--color-ink);
+}
+
+.whatif-chip--active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #ffffff;
+}
+
+/* ---- v2: you vs your money bar ---- */
+.split-bar {
+  display: flex;
+  height: 28px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: var(--gap-sm) 0;
+}
+
+.split-bar__segment--contrib {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.split-bar__segment--growth {
+  background: #ffffff;
+}
+
+.split-legend {
+  display: flex;
+  gap: var(--gap-md);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.split-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #e5ece7;
+}
+
+.split-legend__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.split-legend__swatch--contrib {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.split-legend__swatch--growth {
+  background: #ffffff;
+}
+
+/* ---- v2: predict-and-reveal labs ---- */
+.predict-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  margin: var(--gap-sm) 0;
+}
+
+.lab-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.lab-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: var(--gap-md) 0;
+  border-bottom: 1px solid var(--color-border);
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+
+.lab-entry:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.lab-entry__title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin: 0 0 4px;
+}
+
+.lab-entry__desc {
+  font-size: 13px;
+  color: var(--color-ink-muted);
+  margin: 0;
+}
+
+.lab-entry__tag {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-faint);
+  white-space: nowrap;
+}
+
+.back-link {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: var(--gap-lg);
+}
+
+.back-link:hover {
+  color: var(--color-ink);
+}
+
+/* ---- v2: glossary (Learn) ---- */
+.glossary-entry {
+  padding: var(--gap-md) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.glossary-entry__term {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin: 0 0 6px;
+}
+
+.glossary-entry__def {
+  font-size: 13.5px;
+  color: var(--color-ink-muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ---- v2: lab question + inline button/textbox variants ---- */
+.lab-question {
+  margin: 0 0 var(--gap-sm);
+  font-size: 14px;
+  color: var(--color-ink);
+  line-height: 1.6;
+}
+
+.control-textbox--wide {
+  width: 120px;
+}
+
+.button--inline {
+  margin-top: 0;
+  width: auto;
+}
+
+.reveal-result {
+  margin-top: var(--gap-sm);
+}
+
+.reveal-result__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 13.5px;
+}
+
+.reveal-result__row:last-child {
+  border-bottom: none;
+}
+
+/* ---- v2: lab titles rendered outside a highlight-section still need dark ink ---- */
+.lab-title {
+  color: var(--color-ink) !important;
+  margin-bottom: var(--gap-sm);
+}

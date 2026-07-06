@@ -43,7 +43,12 @@ function bandPath(bandPoints, totalYears, maxValue) {
     return `${top} ${bottom} Z`;
 }
 
-export default function LedgerChart({ lines, band, crossoverYear, crossoverLabel, totalYears }) {
+/**
+ * markers: [{ year, label }] — drawn as dashed vertical ticks with a label
+ * near the top. Used for crossover points and wealth thresholds ($100K, $1M).
+ * currentAge: if provided, x-axis ticks show age instead of a bare year count.
+ */
+export default function LedgerChart({ lines, band, markers = [], totalYears, currentAge }) {
     const allValues = [
         ...lines.flatMap((line) => line.points.map((p) => p.value)),
         ...(band ? band.points.flatMap((p) => [p.low, p.high]) : [])
@@ -55,6 +60,8 @@ export default function LedgerChart({ lines, band, crossoverYear, crossoverLabel
     const yearTicks = (lines[0]?.points ?? [])
         .map((p) => p.year)
         .filter((year) => year % yearTickStep === 0 || year === totalYears);
+
+    const visibleMarkers = markers.filter((m) => m.year >= 0 && m.year <= totalYears);
 
     return (
         <div>
@@ -77,15 +84,9 @@ export default function LedgerChart({ lines, band, crossoverYear, crossoverLabel
             Range (low&ndash;high)
           </span>
                 )}
-                {crossoverYear !== null && crossoverYear !== undefined && (
-                    <span className="chart-legend__item">
-            <span className="chart-legend__swatch chart-legend__swatch--dashed" />
-                        {crossoverLabel}
-          </span>
-                )}
             </div>
 
-            <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width="100%" role="img" aria-label="Comparison chart of projected account values over time">
+            <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width="100%" role="img" aria-label="Comparison chart of projected account values over time, with milestone markers">
                 {gridLevels.map((level) => {
                     const y = PAD.top + PLOT_HEIGHT - level * PLOT_HEIGHT;
                     return (
@@ -108,7 +109,7 @@ export default function LedgerChart({ lines, band, crossoverYear, crossoverLabel
                         fill="var(--color-ink-faint)"
                         fontFamily="var(--font-mono)"
                     >
-                        {year}
+                        {currentAge != null ? currentAge + year : year}
                     </text>
                 ))}
 
@@ -127,17 +128,32 @@ export default function LedgerChart({ lines, band, crossoverYear, crossoverLabel
                     />
                 ))}
 
-                {crossoverYear !== null && crossoverYear !== undefined && crossoverYear <= totalYears && (
-                    <line
-                        x1={xForYear(crossoverYear, totalYears)}
-                        x2={xForYear(crossoverYear, totalYears)}
-                        y1={PAD.top}
-                        y2={PAD.top + PLOT_HEIGHT}
-                        stroke="var(--color-accent-strong)"
-                        strokeWidth="1.5"
-                        strokeDasharray="3,3"
-                    />
-                )}
+                {visibleMarkers.map((marker, index) => {
+                    const x = xForYear(marker.year, totalYears);
+                    return (
+                        <g key={`${marker.label}-${index}`}>
+                            <line
+                                x1={x}
+                                x2={x}
+                                y1={PAD.top}
+                                y2={PAD.top + PLOT_HEIGHT}
+                                stroke="var(--color-accent-strong)"
+                                strokeWidth="1.5"
+                                strokeDasharray="3,3"
+                            />
+                            <text
+                                x={x}
+                                y={PAD.top + 12 + (index % 2) * 14}
+                                textAnchor="middle"
+                                fontSize="10.5"
+                                fill="var(--color-accent-strong)"
+                                fontFamily="var(--font-mono)"
+                            >
+                                {marker.label}
+                            </text>
+                        </g>
+                    );
+                })}
             </svg>
         </div>
     );

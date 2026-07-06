@@ -25,3 +25,16 @@ export function toLinePoints(series, dollarMode) {
         value: dollarMode === 'real' ? point.balanceReal : point.balanceNominal
     }));
 }
+
+/**
+ * Takes a line that was computed as if it started at year 0, and shifts it to
+ * start at `delayYears` instead — padding the front with zero-balance years.
+ * Used for "start now vs. wait N years" comparisons without needing a
+ * backend change: we just run the engine for the shorter remaining duration
+ * and shift the result down the timeline.
+ */
+export function delayLine(points, delayYears) {
+    const prefix = Array.from({ length: delayYears }, (_, i) => ({ year: i, value: 0 }));
+    const shifted = points.map((p) => ({ year: p.year + delayYears, value: p.value }));
+    return [...prefix, ...shifted];
+}
