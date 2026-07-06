@@ -53,6 +53,12 @@ export default function ExplorePage({ currentAge }) {
     const [errorMessage, setErrorMessage] = useState(null);
 
     const debounceRef = useRef(null);
+    // Incremented on every fetch kicked off. A response only gets applied if
+    // it's still the most recent request in flight — this prevents a slower,
+    // older network response from landing after a newer one and silently
+    // overwriting the chart with stale data (the likely cause of a chart that
+    // looks like it "un-updates" itself after rapid slider changes).
+    const requestIdRef = useRef(0);
 
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -77,6 +83,7 @@ export default function ExplorePage({ currentAge }) {
     }
 
     function runSecuritiesCalculation() {
+        const thisRequestId = ++requestIdRef.current;
         setIsLoading(true);
         setErrorMessage(null);
         const { savingsRatePercent, stockExpectedRatePercent, volatilityPercent } = securitiesConfig;
@@ -88,47 +95,61 @@ export default function ExplorePage({ currentAge }) {
             calculateScenario(buildInput(sharedInput, { annualRatePercent: stockExpectedRatePercent + volatilityPercent }))
         ])
             .then(([savingsResult, lowResult, expectedResult, highResult]) => {
+                if (thisRequestId !== requestIdRef.current) return; // a newer request has since started; drop this stale result
+
                 const savingsPoints = toLinePoints(savingsResult.series, dollarMode);
                 const expectedPoints = toLinePoints(expectedResult.series, dollarMode);
                 const lowPoints = toLinePoints(lowResult.series, dollarMode);
                 const highPoints = toLinePoints(highResult.series, dollarMode);
 
                 const builtLines = [
-                    { id: 'savings', label: 'Savings account', colorVar: 'var(--color-ink-muted)', points: savingsPoints },
-                    { id: 'stocks', label: 'Securities (expected)', colorVar: 'var(--color-accent-strong)', points: expectedPoints }
+                    { id: 'savings', label: 'Savings account', colorVar: 'var(--color-line-a)', points: savingsPoints },
+                    { id: 'stocks', label: 'Securities (expected)', colorVar: 'var(--color-line-b)', points: expectedPoints }
                 ];
                 setLines(builtLines);
                 setBand({ points: lowPoints.map((p, i) => ({ year: p.year, low: p.value, high: highPoints[i].value })) });
                 setCrossoverYear(findCrossoverYear(savingsPoints, expectedPoints));
                 finishWithLines(builtLines, expectedResult);
             })
-            .catch((err) => setErrorMessage(err.message))
-            .finally(() => setIsLoading(false));
+            .catch((err) => {
+                if (thisRequestId === requestIdRef.current) setErrorMessage(err.message);
+            })
+            .finally(() => {
+                if (thisRequestId === requestIdRef.current) setIsLoading(false);
+            });
     }
 
     function runBreakEvenCalculation() {
+        const thisRequestId = ++requestIdRef.current;
         setIsLoading(true);
         setErrorMessage(null);
 
         Promise.all([calculateScenario(buildInput(sharedInput, optionA)), calculateScenario(buildInput(sharedInput, optionB))])
             .then(([resultA, resultB]) => {
+                if (thisRequestId !== requestIdRef.current) return;
+
                 const pointsA = toLinePoints(resultA.series, dollarMode);
                 const pointsB = toLinePoints(resultB.series, dollarMode);
 
                 const builtLines = [
-                    { id: 'optionA', label: 'Option A', colorVar: 'var(--color-ink-muted)', points: pointsA },
-                    { id: 'optionB', label: 'Option B', colorVar: 'var(--color-accent-strong)', points: pointsB }
+                    { id: 'optionA', label: 'Option A', colorVar: 'var(--color-line-a)', points: pointsA },
+                    { id: 'optionB', label: 'Option B', colorVar: 'var(--color-line-b)', points: pointsB }
                 ];
                 setLines(builtLines);
                 setBand(null);
                 setCrossoverYear(findCrossoverYear(pointsA, pointsB));
                 finishWithLines(builtLines, resultA);
             })
-            .catch((err) => setErrorMessage(err.message))
-            .finally(() => setIsLoading(false));
+            .catch((err) => {
+                if (thisRequestId === requestIdRef.current) setErrorMessage(err.message);
+            })
+            .finally(() => {
+                if (thisRequestId === requestIdRef.current) setIsLoading(false);
+            });
     }
 
     function runTimingCalculation() {
+        const thisRequestId = ++requestIdRef.current;
         setIsLoading(true);
         setErrorMessage(null);
         const { waitYears, annualRatePercent } = timingConfig;
@@ -139,21 +160,27 @@ export default function ExplorePage({ currentAge }) {
             calculateScenario(buildInput({ ...sharedInput, years: remainingYears }, { annualRatePercent }))
         ])
             .then(([nowResult, waitResult]) => {
+                if (thisRequestId !== requestIdRef.current) return;
+
                 const nowPoints = toLinePoints(nowResult.series, dollarMode);
                 const waitPointsRaw = toLinePoints(waitResult.series, dollarMode);
                 const waitPoints = delayLine(waitPointsRaw, waitYears);
 
                 const builtLines = [
-                    { id: 'startnow', label: 'Start now', colorVar: 'var(--color-accent-strong)', points: nowPoints },
-                    { id: 'wait', label: `Wait ${waitYears} years`, colorVar: 'var(--color-ink-muted)', dashed: true, points: waitPoints }
+                    { id: 'startnow', label: 'Start now', colorVar: 'var(--color-line-a)', points: nowPoints },
+                    { id: 'wait', label: `Wait ${waitYears} years`, colorVar: 'var(--color-line-b)', dashed: true, points: waitPoints }
                 ];
                 setLines(builtLines);
                 setBand(null);
                 setCrossoverYear(findCrossoverYear(nowPoints, waitPoints));
                 finishWithLines(builtLines, nowResult);
             })
-            .catch((err) => setErrorMessage(err.message))
-            .finally(() => setIsLoading(false));
+            .catch((err) => {
+                if (thisRequestId === requestIdRef.current) setErrorMessage(err.message);
+            })
+            .finally(() => {
+                if (thisRequestId === requestIdRef.current) setIsLoading(false);
+            });
     }
 
     const markers = [];
@@ -176,11 +203,18 @@ export default function ExplorePage({ currentAge }) {
 
             <div className="layout">
                 <div className="panel">
-                    <ControlPanel input={sharedInput} onChange={setSharedInput} />
+                    {mode !== 'breakeven' && <ControlPanel input={sharedInput} onChange={setSharedInput} />}
 
                     {mode === 'securities' && <SecuritiesControls config={securitiesConfig} onChange={setSecuritiesConfig} />}
                     {mode === 'breakeven' && (
-                        <BreakEvenControls optionA={optionA} optionB={optionB} onChangeA={setOptionA} onChangeB={setOptionB} />
+                        <BreakEvenControls
+                            sharedInput={sharedInput}
+                            onSharedInputChange={setSharedInput}
+                            optionA={optionA}
+                            optionB={optionB}
+                            onChangeA={setOptionA}
+                            onChangeB={setOptionB}
+                        />
                     )}
                     {mode === 'timing' && (
                         <TimingControls config={timingConfig} onChange={setTimingConfig} maxWait={Math.max(1, sharedInput.years - 1)} />

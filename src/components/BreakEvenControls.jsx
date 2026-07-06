@@ -42,10 +42,35 @@ function OptionBlock({ title, option, onChange }) {
     );
 }
 
-export default function BreakEvenControls({ optionA, optionB, onChangeA, onChangeB }) {
+export default function BreakEvenControls({ sharedInput, onSharedInputChange, optionA, optionB, onChangeA, onChangeB }) {
+    function updateShared(field, value) {
+        onSharedInputChange({ ...sharedInput, [field]: value });
+    }
+
     return (
         <div className="card">
             <p className="section-label">Compare two plans</p>
+
+            <SliderField
+                label="Years"
+                value={sharedInput.years}
+                min={1}
+                max={40}
+                step={1}
+                unit=""
+                onChange={(v) => updateShared('years', v)}
+            />
+            <SliderField
+                label="Inflation"
+                value={sharedInput.annualInflationPercent}
+                min={0}
+                max={10}
+                step={0.5}
+                unit="%"
+                onChange={(v) => updateShared('annualInflationPercent', v)}
+            />
+
+            <div className="option-divider" />
             <OptionBlock title="Option A" option={optionA} onChange={onChangeA} />
             <div className="option-divider" />
             <OptionBlock title="Option B" option={optionB} onChange={onChangeB} />

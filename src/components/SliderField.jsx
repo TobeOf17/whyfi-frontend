@@ -14,15 +14,7 @@ export default function SliderField({ label, value, min, max, step, unit, onChan
                 <span className="control-label">{label}</span>
                 <span className="control-value-group">
           {unit === '$' && <span className="control-value-prefix">$</span>}
-                    <input
-                        className="control-textbox"
-                        type="number"
-                        value={value}
-                        min={min}
-                        max={max}
-                        step={step}
-                        onChange={handleTextChange}
-                    />
+                    <input className="control-textbox" type="number" value={value} step={step} onChange={handleTextChange} />
                     {unit === '%' && <span className="control-value-suffix">%</span>}
         </span>
             </div>
@@ -32,7 +24,7 @@ export default function SliderField({ label, value, min, max, step, unit, onChan
                 min={min}
                 max={max}
                 step={step}
-                value={value}
+                value={Math.min(Math.max(value, min), max)}
                 onChange={(e) => onChange(Number(e.target.value))}
             />
         </div>

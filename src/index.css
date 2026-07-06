@@ -7,6 +7,8 @@
   --color-accent: #1b4332;
   --color-accent-strong: #1b4332;
   --color-accent-light: #52b788;
+  --color-line-a: #c96a1f;
+  --color-line-b: #1d5fa8;
   --color-accent-bg: #eaf5ee;
   --color-border: #e3e1da;
   --color-border-strong: #cfcdc3;
@@ -741,4 +743,68 @@ body {
 .lab-title {
   color: var(--color-ink) !important;
   margin-bottom: var(--gap-sm);
+}
+
+/* ---- v3: bolder type + stronger structure, still accounting-editorial ---- */
+.wordmark {
+  font-weight: 700;
+}
+
+.section-label {
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.stat__value {
+  font-size: 27px;
+  font-weight: 700;
+  border-top-width: 2px;
+}
+
+.highlight-section__title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.card {
+  border-width: 1.5px;
+}
+
+.nav__item--active {
+  font-weight: 600;
+  border-bottom-width: 3px;
+}
+
+.toggle {
+  font-weight: 600;
+}
+
+.glossary-entry__term,
+.lab-entry__title,
+.option-block__title {
+  font-weight: 700;
+}
+
+/* ---- v3: chart hover crosshair + tooltip ---- */
+.chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--color-ink);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  line-height: 1.6;
+  white-space: nowrap;
+  z-index: 5;
+}
+
+.chart-tooltip__year {
+  color: #b8bcb2;
+  margin-bottom: 2px;
+}
+
+.chart-svg-wrap {
+  position: relative;
 }

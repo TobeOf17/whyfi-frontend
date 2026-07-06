@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { formatCurrency } from '../services/formatters.js';
 
 const WIDTH = 900;
@@ -43,12 +44,11 @@ function bandPath(bandPoints, totalYears, maxValue) {
     return `${top} ${bottom} Z`;
 }
 
-/**
- * markers: [{ year, label }] — drawn as dashed vertical ticks with a label
- * near the top. Used for crossover points and wealth thresholds ($100K, $1M).
- * currentAge: if provided, x-axis ticks show age instead of a bare year count.
- */
 export default function LedgerChart({ lines, band, markers = [], totalYears, currentAge }) {
+    const wrapRef = useRef(null);
+    const [hoverYear, setHoverYear] = useState(null);
+    const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+
     const allValues = [
         ...lines.flatMap((line) => line.points.map((p) => p.value)),
         ...(band ? band.points.flatMap((p) => [p.low, p.high]) : [])
@@ -63,8 +63,27 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
 
     const visibleMarkers = markers.filter((m) => m.year >= 0 && m.year <= totalYears);
 
+    function handleMouseMove(e) {
+        const svg = e.currentTarget;
+        const rect = svg.getBoundingClientRect();
+        const scaleX = WIDTH / rect.width;
+        const localX = (e.clientX - rect.left) * scaleX;
+        const rawYear = ((localX - PAD.left) / PLOT_WIDTH) * totalYears;
+        const year = Math.round(Math.min(Math.max(rawYear, 0), totalYears));
+        setHoverYear(year);
+
+        const wrapRect = wrapRef.current.getBoundingClientRect();
+        setTooltipPos({ x: e.clientX - wrapRect.left, y: e.clientY - wrapRect.top });
+    }
+
+    function handleMouseLeave() {
+        setHoverYear(null);
+    }
+
+    const hoverPoints = hoverYear === null ? [] : lines.map((line) => line.points[hoverYear]).filter(Boolean);
+
     return (
-        <div>
+        <div className="chart-svg-wrap" ref={wrapRef}>
             <div className="chart-legend">
                 {lines.map((line) => (
                     <span className="chart-legend__item" key={line.id}>
@@ -72,8 +91,9 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
                 className={
                     line.dashed
                         ? 'chart-legend__swatch chart-legend__swatch--dashed-line'
-                        : 'chart-legend__swatch chart-legend__swatch--solid'
+                        : 'chart-legend__swatch'
                 }
+                style={{ background: line.dashed ? undefined : line.colorVar }}
             />
                         {line.label}
           </span>
@@ -86,7 +106,14 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
                 )}
             </div>
 
-            <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width="100%" role="img" aria-label="Comparison chart of projected account values over time, with milestone markers">
+            <svg
+                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                width="100%"
+                role="img"
+                aria-label="Comparison chart of projected account values over time, with milestone markers. Hover to see exact values."
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+            >
                 {gridLevels.map((level) => {
                     const y = PAD.top + PLOT_HEIGHT - level * PLOT_HEIGHT;
                     return (
@@ -154,7 +181,44 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
                         </g>
                     );
                 })}
+
+                {hoverYear !== null && (
+                    <g>
+                        <line
+                            x1={xForYear(hoverYear, totalYears)}
+                            x2={xForYear(hoverYear, totalYears)}
+                            y1={PAD.top}
+                            y2={PAD.top + PLOT_HEIGHT}
+                            stroke="var(--color-ink-faint)"
+                            strokeWidth="1"
+                        />
+                        {hoverPoints.map((point, i) => (
+                            <circle
+                                key={i}
+                                cx={xForYear(point.year, totalYears)}
+                                cy={yForValue(point.value, maxValue)}
+                                r="4"
+                                fill={lines[i].colorVar}
+                                stroke="#ffffff"
+                                strokeWidth="1.5"
+                            />
+                        ))}
+                    </g>
+                )}
             </svg>
+
+            {hoverYear !== null && hoverPoints.length > 0 && (
+                <div className="chart-tooltip" style={{ left: `${tooltipPos.x + 14}px`, top: `${tooltipPos.y - 10}px` }}>
+                    <div className="chart-tooltip__year">
+                        {currentAge != null ? `Age ${currentAge + hoverYear}` : `Year ${hoverYear}`}
+                    </div>
+                    {lines.map((line, i) => (
+                        <div key={line.id}>
+                            {line.label}: {hoverPoints[i] ? formatCurrency(hoverPoints[i].value) : '—'}
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
