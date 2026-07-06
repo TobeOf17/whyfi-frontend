@@ -9,7 +9,11 @@ export default function MyPlanPage({ profile, onChange }) {
 
     return (
         <div>
-            <p className="section-label">My plan</p>
+            <p className="page-title">My Plan</p>
+            <p className="page-description">
+                Your age drives the timeline across Explore, so milestones read in real years of your
+                life instead of an abstract year count.
+            </p>
 
             <div className="card">
                 <SliderField

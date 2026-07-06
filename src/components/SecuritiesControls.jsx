@@ -1,6 +1,9 @@
 import SliderField from './SliderField.jsx';
+import CollapsibleSection from './CollapsibleSection.jsx';
 
-export default function SecuritiesControls({ config, onChange }) {
+const FALLBACK_CONFIG = { savingsRatePercent: 4, stockExpectedRatePercent: 8, volatilityPercent: 5 };
+
+export default function SecuritiesControls({ config = FALLBACK_CONFIG, onChange }) {
     function updateField(field, value) {
         onChange({ ...config, [field]: value });
     }
@@ -29,20 +32,21 @@ export default function SecuritiesControls({ config, onChange }) {
                 onChange={(v) => updateField('stockExpectedRatePercent', v)}
             />
 
-            <SliderField
-                label="Volatility (± range)"
-                value={config.volatilityPercent}
-                min={1}
-                max={12}
-                step={0.5}
-                unit="%"
-                onChange={(v) => updateField('volatilityPercent', v)}
-            />
-
-            <p className="control-note">
-                The shaded band shows a low/high rate range, not a true simulated distribution of
-                market paths — treat it as a rough sense of variability, not a statistical forecast.
-            </p>
+            <CollapsibleSection title="Advanced assumptions">
+                <SliderField
+                    label="Volatility (± range)"
+                    value={config.volatilityPercent}
+                    min={1}
+                    max={12}
+                    step={0.5}
+                    unit="%"
+                    onChange={(v) => updateField('volatilityPercent', v)}
+                />
+                <p className="control-note">
+                    The shaded band shows a low/high rate range, not a true simulated distribution of
+                    market paths — treat it as a rough sense of variability, not a statistical forecast.
+                </p>
+            </CollapsibleSection>
         </div>
     );
 }

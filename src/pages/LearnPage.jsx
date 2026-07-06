@@ -28,7 +28,11 @@ const ENTRIES = [
 export default function LearnPage() {
     return (
         <div>
-            <p className="section-label">Learn</p>
+            <p className="page-title">Learn</p>
+            <p className="page-description">
+                Core financial concepts, explained plainly — the vocabulary behind everything you'll see
+                in Explore and Labs.
+            </p>
             <div>
                 {ENTRIES.map((entry) => (
                     <div className="glossary-entry" key={entry.term}>

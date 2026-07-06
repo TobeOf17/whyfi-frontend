@@ -19,9 +19,10 @@ export default function LabsPage() {
 
     return (
         <div>
-            <p className="section-label">Financial labs</p>
-            <p className="control-note">
-                Short, focused experiments. Each one asks you to predict an outcome before showing you the real result.
+            <p className="page-title">Labs</p>
+            <p className="page-description">
+                Short, focused experiments. Each one asks you to predict an outcome before showing you
+                the real result — a quick way to test your own intuition against the math.
             </p>
 
             <div className="lab-list">

@@ -10,6 +10,7 @@ import TimingControls from '../components/TimingControls.jsx';
 import ToggleBar from '../components/ToggleBar.jsx';
 import WhatIfPanel from '../components/WhatIfPanel.jsx';
 import StatRow from '../components/StatRow.jsx';
+import InsightStrip from '../components/InsightStrip.jsx';
 import LedgerChart from '../components/LedgerChart.jsx';
 import MilestoneList from '../components/MilestoneList.jsx';
 import YouVsMoneyBreakdown from '../components/YouVsMoneyBreakdown.jsx';
@@ -51,13 +52,9 @@ export default function ExplorePage({ currentAge }) {
     const [wealthHitsByLine, setWealthHitsByLine] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
+    const [resultVersion, setResultVersion] = useState(0);
 
     const debounceRef = useRef(null);
-    // Incremented on every fetch kicked off. A response only gets applied if
-    // it's still the most recent request in flight — this prevents a slower,
-    // older network response from landing after a newer one and silently
-    // overwriting the chart with stale data (the likely cause of a chart that
-    // looks like it "un-updates" itself after rapid slider changes).
     const requestIdRef = useRef(0);
 
     useEffect(() => {
@@ -80,6 +77,7 @@ export default function ExplorePage({ currentAge }) {
         setPrimaryMilestones(primaryResult.milestones);
         const lastPoint = primaryResult.series[primaryResult.series.length - 1];
         setPrimaryBreakdown({ contributions: lastPoint.cumulativeContributions, growth: lastPoint.cumulativeGrowth });
+        setResultVersion((v) => v + 1);
     }
 
     function runSecuritiesCalculation() {
@@ -95,7 +93,7 @@ export default function ExplorePage({ currentAge }) {
             calculateScenario(buildInput(sharedInput, { annualRatePercent: stockExpectedRatePercent + volatilityPercent }))
         ])
             .then(([savingsResult, lowResult, expectedResult, highResult]) => {
-                if (thisRequestId !== requestIdRef.current) return; // a newer request has since started; drop this stale result
+                if (thisRequestId !== requestIdRef.current) return;
 
                 const savingsPoints = toLinePoints(savingsResult.series, dollarMode);
                 const expectedPoints = toLinePoints(expectedResult.series, dollarMode);
@@ -199,6 +197,13 @@ export default function ExplorePage({ currentAge }) {
 
     return (
         <div>
+            <p className="page-title">Explore</p>
+            <p className="page-description">
+                Compare financial paths side by side — savings against securities, one plan against
+                another, or starting now against waiting. Adjust anything on the left and the chart
+                updates as you go.
+            </p>
+
             <ToggleBar mode={mode} onModeChange={setMode} dollarMode={dollarMode} onDollarModeChange={setDollarMode} />
 
             <div className="layout">
@@ -228,9 +233,13 @@ export default function ExplorePage({ currentAge }) {
                 <div>
                     {lines.length > 0 ? (
                         <>
-                            <StatRow lines={lines} />
+                            <div key={`stats-${resultVersion}`}>
+                                <StatRow lines={lines} />
+                            </div>
 
-                            <div className="chart-wrap">
+                            <InsightStrip insights={insights} />
+
+                            <div key={`chart-${resultVersion}`} className="chart-wrap">
                                 <LedgerChart
                                     lines={lines}
                                     band={band}
@@ -240,11 +249,17 @@ export default function ExplorePage({ currentAge }) {
                                 />
                             </div>
 
-                            <Lesson mode={mode} lines={lines} crossoverYear={crossoverYear} totalYears={sharedInput.years} waitYears={timingConfig.waitYears} />
+                            <div key={`lesson-${resultVersion}`} className="fade-in">
+                                <Lesson mode={mode} lines={lines} crossoverYear={crossoverYear} totalYears={sharedInput.years} waitYears={timingConfig.waitYears} />
+                            </div>
 
-                            <YouVsMoneyBreakdown breakdown={primaryBreakdown} lineLabel={lines[mode === 'timing' ? 0 : mode === 'breakeven' ? 0 : 1].label} />
+                            <div key={`breakdown-${resultVersion}`} className="fade-in">
+                                <YouVsMoneyBreakdown breakdown={primaryBreakdown} lineLabel={lines[mode === 'timing' ? 0 : mode === 'breakeven' ? 0 : 1].label} />
+                            </div>
 
-                            <LiveInsights insights={insights} />
+                            <div key={`insights-${resultVersion}`} className="fade-in">
+                                <LiveInsights insights={insights} />
+                            </div>
 
                             <div className="plain-section">
                                 <p className="section-label">Milestones</p>

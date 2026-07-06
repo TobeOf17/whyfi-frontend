@@ -2,8 +2,8 @@ import { useRef, useState } from 'react';
 import { formatCurrency } from '../services/formatters.js';
 
 const WIDTH = 900;
-const HEIGHT = 340;
-const PAD = { top: 24, right: 20, bottom: 32, left: 64 };
+const HEIGHT = 420;
+const PAD = { top: 40, right: 20, bottom: 32, left: 64 };
 const PLOT_WIDTH = WIDTH - PAD.left - PAD.right;
 const PLOT_HEIGHT = HEIGHT - PAD.top - PAD.bottom;
 
@@ -42,6 +42,18 @@ function bandPath(bandPoints, totalYears, maxValue) {
         })
         .join(' ');
     return `${top} ${bottom} Z`;
+}
+
+function MilestonePill({ marker, x, y }) {
+    const width = marker.label.length * 6.4 + 20;
+    return (
+        <g>
+            <rect x={x - width / 2} y={y - 14} width={width} height={20} rx={10} fill="var(--color-accent-strong)" />
+            <text x={x} y={y} textAnchor="middle" fontSize="10.5" fontFamily="var(--font-mono)" fill="#ffffff">
+                {marker.label}
+            </text>
+        </g>
+    );
 }
 
 export default function LedgerChart({ lines, band, markers = [], totalYears, currentAge }) {
@@ -83,7 +95,7 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
     const hoverPoints = hoverYear === null ? [] : lines.map((line) => line.points[hoverYear]).filter(Boolean);
 
     return (
-        <div className="chart-svg-wrap" ref={wrapRef}>
+        <div className="chart-svg-wrap fade-in" ref={wrapRef}>
             <div className="chart-legend">
                 {lines.map((line) => (
                     <span className="chart-legend__item" key={line.id}>
@@ -157,6 +169,7 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
 
                 {visibleMarkers.map((marker, index) => {
                     const x = xForYear(marker.year, totalYears);
+                    const y = PAD.top - 22 + (index % 2) * 18;
                     return (
                         <g key={`${marker.label}-${index}`}>
                             <line
@@ -168,16 +181,7 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
                                 strokeWidth="1.5"
                                 strokeDasharray="3,3"
                             />
-                            <text
-                                x={x}
-                                y={PAD.top + 12 + (index % 2) * 14}
-                                textAnchor="middle"
-                                fontSize="10.5"
-                                fill="var(--color-accent-strong)"
-                                fontFamily="var(--font-mono)"
-                            >
-                                {marker.label}
-                            </text>
+                            <MilestonePill marker={marker} x={x} y={Math.max(y, 14)} />
                         </g>
                     );
                 })}

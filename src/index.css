@@ -42,15 +42,16 @@ body {
 .app {
   max-width: 1360px;
   margin: 0 auto;
-  padding: var(--gap-lg) var(--gap-lg) var(--gap-xl);
+  padding: var(--gap-md) var(--gap-lg) var(--gap-xl);
 }
 
 .header {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   border-bottom: 1px solid var(--color-border);
-  padding-bottom: var(--gap-md);
+  padding-bottom: var(--gap-sm);
   margin-bottom: var(--gap-md);
 }
 
@@ -87,6 +88,11 @@ body {
   .layout {
     grid-template-columns: 1fr;
   }
+
+  .panel {
+    position: static;
+    max-height: none;
+  }
 }
 
 .section-label {
@@ -102,6 +108,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--gap-md);
+  position: sticky;
+  top: var(--gap-md);
+  align-self: start;
+  max-height: calc(100vh - var(--gap-lg));
+  overflow-y: auto;
 }
 
 .card {
@@ -196,29 +207,55 @@ body {
 
 .slider {
   width: 100%;
-  height: 2px;
-  background: var(--color-border-strong);
+  height: 4px;
+  border-radius: 2px;
   appearance: none;
   outline: none;
-  border-radius: 1px;
+  cursor: pointer;
+  transition: opacity 150ms ease;
 }
 
 .slider::-webkit-slider-thumb {
   appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: var(--color-accent-strong);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px var(--color-border-strong);
   cursor: pointer;
+  transition: transform 150ms ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
 }
 
 .slider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: var(--color-accent-strong);
-  border: none;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px var(--color-border-strong);
   cursor: pointer;
+  transition: transform 150ms ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+}
+
+.slider::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-border-strong);
+}
+
+.slider::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-accent-strong);
 }
 
 .toggle-group {
@@ -229,16 +266,16 @@ body {
 }
 
 .toggle {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
   padding: 9px 16px;
   background: var(--color-bg);
   color: var(--color-ink-muted);
   border: none;
   cursor: pointer;
   border-right: 1px solid var(--color-border-strong);
+  transition: background 180ms ease, color 180ms ease;
 }
 
 .toggle:last-child {
@@ -416,16 +453,16 @@ body {
 }
 
 .nav__item {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
   color: var(--color-ink-faint);
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
   padding: 0 0 10px;
   cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease;
 }
 
 .nav__item:hover {
@@ -546,14 +583,16 @@ body {
 }
 
 .whatif-chip {
-  font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
   padding: 6px 12px;
   border-radius: 999px;
   border: 1px solid var(--color-border-strong);
   background: var(--color-bg);
   color: var(--color-ink-muted);
   cursor: pointer;
+  transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
 }
 
 .whatif-chip:hover {
@@ -669,10 +708,9 @@ body {
 }
 
 .back-link {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
   color: var(--color-ink-muted);
   background: none;
   border: none;
@@ -775,9 +813,7 @@ body {
   border-bottom-width: 3px;
 }
 
-.toggle {
-  font-weight: 600;
-}
+/* .toggle bold weight is set in the main rule above */
 
 .glossary-entry__term,
 .lab-entry__title,
@@ -807,4 +843,147 @@ body {
 
 .chart-svg-wrap {
   position: relative;
+}
+
+/* ---- v4: page title + description above each tool ---- */
+.page-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0 0 8px;
+}
+
+.page-description {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-ink-muted);
+  line-height: 1.65;
+  margin: 0 0 var(--gap-lg);
+  max-width: 640px;
+}
+
+/* ---- v4: larger, focal chart ---- */
+.chart-wrap {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--gap-lg) var(--gap-lg) var(--gap-md);
+  margin-bottom: var(--gap-lg);
+  background: var(--color-bg);
+}
+
+/* ---- v4: stat cards with data-series color accents + comparison context ---- */
+.stat {
+  border: 1px solid var(--color-border);
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  padding: var(--gap-sm) var(--gap-md);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.stat__delta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.stat__delta--positive {
+  color: var(--color-accent-strong);
+}
+
+.stat__delta--negative {
+  color: var(--color-negative);
+}
+
+/* ---- v4: insight strip (single most important outcome) ---- */
+.insight-strip {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gap-sm);
+  border-left: 3px solid var(--color-accent-strong);
+  padding: 10px var(--gap-md);
+  margin-bottom: var(--gap-lg);
+  background: var(--color-bg-subtle);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.insight-strip__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent-strong);
+  flex-shrink: 0;
+}
+
+.insight-strip__text {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--color-ink);
+}
+
+/* ---- v4: collapsible advanced assumptions ---- */
+.collapsible {
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--gap-sm);
+  padding-top: var(--gap-sm);
+}
+
+.collapsible__trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-ink-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 100%;
+  text-align: left;
+}
+
+.collapsible__chevron {
+  transition: transform 200ms ease;
+  font-size: 10px;
+}
+
+.collapsible__chevron--open {
+  transform: rotate(90deg);
+}
+
+.collapsible__body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 220ms ease;
+}
+
+.collapsible__body--open {
+  max-height: 400px;
+}
+
+.collapsible__inner {
+  padding-top: var(--gap-sm);
+}
+
+/* ---- v4: smooth transitions on value/chart/insight changes ---- */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeSlideIn 240ms ease;
+}
+
+.stat__value {
+  transition: color 200ms ease;
 }
