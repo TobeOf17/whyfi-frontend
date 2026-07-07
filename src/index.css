@@ -18,7 +18,7 @@
   --font-body: 'IBM Plex Sans', -apple-system, sans-serif;
   --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
 
-  --radius: 3px;
+  --radius: 7px;
   --gap-xs: 6px;
   --gap-sm: 12px;
   --gap-md: 24px;
@@ -42,7 +42,7 @@ body {
 .app {
   max-width: 1360px;
   margin: 0 auto;
-  padding: var(--gap-md) var(--gap-lg) var(--gap-xl);
+  padding: var(--gap-sm) var(--gap-lg) var(--gap-xl);
 }
 
 .header {
@@ -51,13 +51,13 @@ body {
   align-items: center;
   text-align: center;
   border-bottom: 1px solid var(--color-border);
-  padding-bottom: var(--gap-sm);
-  margin-bottom: var(--gap-md);
+  padding-bottom: 8px;
+  margin-bottom: var(--gap-sm);
 }
 
 .wordmark {
   font-family: var(--font-display);
-  font-size: 30px;
+  font-size: 22px;
   font-weight: 600;
   letter-spacing: 0.01em;
   margin: 0;
@@ -283,15 +283,15 @@ body {
 }
 
 .toggle--active {
-  background: var(--color-accent-strong);
-  color: #ffffff;
+  background: var(--color-accent-bg);
+  color: var(--color-accent-strong);
 }
 
 .toggle-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--gap-lg);
+  margin-bottom: var(--gap-md);
   flex-wrap: wrap;
   gap: var(--gap-sm);
 }
@@ -319,13 +319,14 @@ body {
 }
 
 .stat__value {
-  font-family: var(--font-mono);
-  font-size: 24px;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 29px;
   color: var(--color-accent-strong);
   margin: 0;
-  border-top: 1px solid var(--color-border);
+  border-top: 2px solid var(--color-border);
   padding-top: 8px;
+  transition: color 200ms ease;
 }
 
 .chart-wrap {
@@ -546,16 +547,7 @@ body {
 }
 
 /* ---- v2: financial values are serif, not mono ---- */
-.stat__value {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 25px;
-  color: var(--color-accent-strong);
-  margin: 0;
-  border-top: 1px solid var(--color-border);
-  padding-top: 8px;
-  font-variant-numeric: normal;
-}
+/* .stat__value consolidated into the single rule above the chart-wrap block */
 
 .hero-figure {
   font-family: var(--font-display);
@@ -793,11 +785,7 @@ body {
   letter-spacing: 0.12em;
 }
 
-.stat__value {
-  font-size: 27px;
-  font-weight: 700;
-  border-top-width: 2px;
-}
+/* .stat__value bold/size consolidated above */
 
 .highlight-section__title {
   font-size: 20px;
@@ -805,7 +793,8 @@ body {
 }
 
 .card {
-  border-width: 1.5px;
+  border-width: 1px;
+  border-radius: 8px;
 }
 
 .nav__item--active {
@@ -848,18 +837,18 @@ body {
 /* ---- v4: page title + description above each tool ---- */
 .page-title {
   font-family: var(--font-display);
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--color-ink);
-  margin: 0 0 8px;
+  margin: 0 0 4px;
 }
 
 .page-description {
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 13px;
   color: var(--color-ink-muted);
-  line-height: 1.65;
-  margin: 0 0 var(--gap-lg);
+  line-height: 1.5;
+  margin: 0 0 var(--gap-sm);
   max-width: 640px;
 }
 
@@ -984,6 +973,4 @@ body {
   animation: fadeSlideIn 240ms ease;
 }
 
-.stat__value {
-  transition: color 200ms ease;
-}
+/* .stat__value transition consolidated above */
