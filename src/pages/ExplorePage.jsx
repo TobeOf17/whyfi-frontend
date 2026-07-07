@@ -13,6 +13,7 @@ import StatRow from '../components/StatRow.jsx';
 import LedgerChart from '../components/LedgerChart.jsx';
 import MilestoneList from '../components/MilestoneList.jsx';
 import YouVsMoneyBreakdown from '../components/YouVsMoneyBreakdown.jsx';
+import FeeImpact from '../components/FeeImpact.jsx';
 import LiveInsights from '../components/LiveInsights.jsx';
 import Lesson from '../components/Lesson.jsx';
 
@@ -58,6 +59,7 @@ export default function ExplorePage({ currentAge }) {
     const [primaryMilestones, setPrimaryMilestones] = useState([]);
     const [primaryBreakdown, setPrimaryBreakdown] = useState(null);
     const [wealthHitsByLine, setWealthHitsByLine] = useState([]);
+    const [feeImpact, setFeeImpact] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
     const [resultVersion, setResultVersion] = useState(0);
@@ -93,6 +95,7 @@ export default function ExplorePage({ currentAge }) {
         const thisRequestId = ++requestIdRef.current;
         setIsLoading(true);
         setErrorMessage(null);
+        setFeeImpact([]);
         const { savingsRatePercent, stockExpectedRatePercent, volatilityPercent } = securitiesConfig;
 
         Promise.all([
@@ -131,9 +134,43 @@ export default function ExplorePage({ currentAge }) {
         setIsLoading(true);
         setErrorMessage(null);
 
-        Promise.all([calculateScenario(buildInput(sharedInput, effectiveOptionInput(optionA))), calculateScenario(buildInput(sharedInput, effectiveOptionInput(optionB)))])
-            .then(([resultA, resultB]) => {
+        const needsNoFeeA = optionA.annualFeePercent > 0;
+        const needsNoFeeB = optionB.annualFeePercent > 0;
+
+        const calls = [
+            calculateScenario(buildInput(sharedInput, effectiveOptionInput(optionA))),
+            calculateScenario(buildInput(sharedInput, effectiveOptionInput(optionB)))
+        ];
+        if (needsNoFeeA) {
+            calls.push(
+                calculateScenario(
+                    buildInput(sharedInput, {
+                        startingPrincipal: optionA.startingPrincipal,
+                        monthlyContribution: optionA.monthlyContribution,
+                        annualRatePercent: optionA.annualRatePercent
+                    })
+                )
+            );
+        }
+        if (needsNoFeeB) {
+            calls.push(
+                calculateScenario(
+                    buildInput(sharedInput, {
+                        startingPrincipal: optionB.startingPrincipal,
+                        monthlyContribution: optionB.monthlyContribution,
+                        annualRatePercent: optionB.annualRatePercent
+                    })
+                )
+            );
+        }
+
+        Promise.all(calls)
+            .then(([resultA, resultB, ...extras]) => {
                 if (thisRequestId !== requestIdRef.current) return;
+
+                let cursor = 0;
+                const noFeeResultA = needsNoFeeA ? extras[cursor++] : null;
+                const noFeeResultB = needsNoFeeB ? extras[cursor++] : null;
 
                 const pointsA = toLinePoints(resultA.series, dollarMode);
                 const pointsB = toLinePoints(resultB.series, dollarMode);
@@ -146,6 +183,19 @@ export default function ExplorePage({ currentAge }) {
                 setBand(null);
                 setCrossoverYear(findCrossoverYear(pointsA, pointsB));
                 finishWithLines(builtLines, resultA);
+
+                const impact = [];
+                if (noFeeResultA) {
+                    const noFeeFinal = toLinePoints(noFeeResultA.series, dollarMode).slice(-1)[0].value;
+                    const withFeeFinal = pointsA[pointsA.length - 1].value;
+                    impact.push({ label: 'Option A', lost: noFeeFinal - withFeeFinal, colorVar: 'var(--color-line-a)' });
+                }
+                if (noFeeResultB) {
+                    const noFeeFinal = toLinePoints(noFeeResultB.series, dollarMode).slice(-1)[0].value;
+                    const withFeeFinal = pointsB[pointsB.length - 1].value;
+                    impact.push({ label: 'Option B', lost: noFeeFinal - withFeeFinal, colorVar: 'var(--color-line-b)' });
+                }
+                setFeeImpact(impact);
             })
             .catch((err) => {
                 if (thisRequestId === requestIdRef.current) setErrorMessage(err.message);
@@ -159,6 +209,7 @@ export default function ExplorePage({ currentAge }) {
         const thisRequestId = ++requestIdRef.current;
         setIsLoading(true);
         setErrorMessage(null);
+        setFeeImpact([]);
         const { waitYears, annualRatePercent } = timingConfig;
         const remainingYears = Math.max(1, sharedInput.years - waitYears);
 
@@ -261,6 +312,8 @@ export default function ExplorePage({ currentAge }) {
                             <div key={`breakdown-${resultVersion}`} className="fade-in">
                                 <YouVsMoneyBreakdown breakdown={primaryBreakdown} lineLabel={lines[mode === 'timing' ? 0 : mode === 'breakeven' ? 0 : 1].label} />
                             </div>
+
+                            <FeeImpact impact={feeImpact} />
 
                             <div key={`insights-${resultVersion}`} className="fade-in">
                                 <LiveInsights insights={insights} />
