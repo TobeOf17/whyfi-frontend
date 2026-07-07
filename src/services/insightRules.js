@@ -17,13 +17,13 @@ export function buildInsights({ mode, lines, band, crossoverYear, wealthHitsByLi
         const trailer = finalA >= finalB ? lineB : lineA;
         const gap = Math.abs(finalA - finalB);
 
-        if (crossoverYear !== null && crossoverYear !== undefined && crossoverYear <= sharedInput.years) {
+        if (crossoverYear !== null && crossoverYear !== undefined && crossoverYear > 0 && crossoverYear <= sharedInput.years) {
             insights.push(
                 `${leader.label} permanently overtakes ${trailer.label} around year ${crossoverYear}.`
             );
         } else {
             insights.push(
-                `${leader.label} stays ahead the entire ${sharedInput.years}-year span — the gap never closes.`
+                `${leader.label} stays ahead the entire ${sharedInput.years}-year span, and the gap never closes.`
             );
         }
 

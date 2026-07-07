@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Nav from './components/Nav.jsx';
 import ExplorePage from './pages/ExplorePage.jsx';
-import LabsPage from './pages/LabsPage.jsx';
 import LearnPage from './pages/LearnPage.jsx';
 import MyPlanPage from './pages/MyPlanPage.jsx';
 
@@ -16,14 +15,13 @@ export default function App() {
             <header className="header">
                 <div>
                     <p className="wordmark">Why<span>Fi</span></p>
-                    <p className="tagline">Investment Sandbox and Visualization</p>
+                    <p className="tagline">Financial time capsule</p>
                 </div>
             </header>
 
             <Nav activeTab={activeTab} onChange={setActiveTab} />
 
             {activeTab === 'explore' && <ExplorePage currentAge={profile.currentAge} />}
-            {activeTab === 'labs' && <LabsPage />}
             {activeTab === 'learn' && <LearnPage />}
             {activeTab === 'myplan' && <MyPlanPage profile={profile} onChange={setProfile} />}
         </div>

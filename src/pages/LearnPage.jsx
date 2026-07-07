@@ -30,8 +30,8 @@ export default function LearnPage() {
         <div>
             <p className="page-title">Learn</p>
             <p className="page-description">
-                Core financial concepts, explained plainly — the vocabulary behind everything you'll see
-                in Explore and Labs.
+                Core financial concepts, explained plainly. The vocabulary behind everything you'll see
+                in Explore.
             </p>
             <div>
                 {ENTRIES.map((entry) => (

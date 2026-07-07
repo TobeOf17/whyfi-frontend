@@ -44,7 +44,7 @@ export default function SecuritiesControls({ config = FALLBACK_CONFIG, onChange 
                 />
                 <p className="control-note">
                     The shaded band shows a low/high rate range, not a true simulated distribution of
-                    market paths — treat it as a rough sense of variability, not a statistical forecast.
+                    market paths, treat it as a rough sense of variability, not a statistical forecast.
                 </p>
             </CollapsibleSection>
         </div>

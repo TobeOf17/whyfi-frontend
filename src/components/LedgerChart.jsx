@@ -3,7 +3,7 @@ import { formatCurrency } from '../services/formatters.js';
 
 const WIDTH = 900;
 const HEIGHT = 420;
-const PAD = { top: 40, right: 20, bottom: 32, left: 64 };
+const PAD = { top: 70, right: 20, bottom: 32, left: 64 };
 const PLOT_WIDTH = WIDTH - PAD.left - PAD.right;
 const PLOT_HEIGHT = HEIGHT - PAD.top - PAD.bottom;
 
@@ -55,6 +55,21 @@ function MilestonePill({ marker, x, y }) {
         </g>
     );
 }
+
+/**
+ * Markers get a fixed row by type, not by their position in the array —
+ * otherwise two "$100K" pills for two different lines could land on
+ * different rows just because of insertion order, which reads as random
+ * rather than consistent.
+ */
+function levelForMarker(label) {
+    if (label === 'Crossover') return 0;
+    if (label.includes('M')) return 2;
+    return 1;
+}
+
+const MARKER_ROW_HEIGHT = 18;
+const MARKER_TOP_Y = 18;
 
 export default function LedgerChart({ lines, band, markers = [], totalYears, currentAge }) {
     const wrapRef = useRef(null);
@@ -169,7 +184,7 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
 
                 {visibleMarkers.map((marker, index) => {
                     const x = xForYear(marker.year, totalYears);
-                    const y = PAD.top - 22 + (index % 2) * 18;
+                    const y = MARKER_TOP_Y + levelForMarker(marker.label) * MARKER_ROW_HEIGHT;
                     return (
                         <g key={`${marker.label}-${index}`}>
                             <line
@@ -181,7 +196,7 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
                                 strokeWidth="1.5"
                                 strokeDasharray="3,3"
                             />
-                            <MilestonePill marker={marker} x={x} y={Math.max(y, 14)} />
+                            <MilestonePill marker={marker} x={x} y={y} />
                         </g>
                     );
                 })}
@@ -218,7 +233,7 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
                     </div>
                     {lines.map((line, i) => (
                         <div key={line.id}>
-                            {line.label}: {hoverPoints[i] ? formatCurrency(hoverPoints[i].value) : '—'}
+                            {line.label}: {hoverPoints[i] ? formatCurrency(hoverPoints[i].value) : 'n/a'}
                         </div>
                     ))}
                 </div>

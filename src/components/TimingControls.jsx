@@ -30,7 +30,7 @@ export default function TimingControls({ config, onChange, maxWait }) {
             />
 
             <p className="control-note">
-                Both paths use the same rate and contribution — the only difference is when they start.
+                Both paths use the same rate and contribution. The only difference is when they start.
                 The "wait" path is modeled by running the same math for a shorter remaining duration and
                 shifting it down the timeline.
             </p>

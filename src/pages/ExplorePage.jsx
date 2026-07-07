@@ -10,7 +10,6 @@ import TimingControls from '../components/TimingControls.jsx';
 import ToggleBar from '../components/ToggleBar.jsx';
 import WhatIfPanel from '../components/WhatIfPanel.jsx';
 import StatRow from '../components/StatRow.jsx';
-import InsightStrip from '../components/InsightStrip.jsx';
 import LedgerChart from '../components/LedgerChart.jsx';
 import MilestoneList from '../components/MilestoneList.jsx';
 import YouVsMoneyBreakdown from '../components/YouVsMoneyBreakdown.jsx';
@@ -101,7 +100,7 @@ export default function ExplorePage({ currentAge }) {
                 const highPoints = toLinePoints(highResult.series, dollarMode);
 
                 const builtLines = [
-                    { id: 'savings', label: 'Savings account', colorVar: 'var(--color-line-a)', points: savingsPoints },
+                    { id: 'savings', label: 'Savings account', colorVar: 'var(--color-line-a)', points: savingsPoints, showDelta: false },
                     { id: 'stocks', label: 'Securities (expected)', colorVar: 'var(--color-line-b)', points: expectedPoints }
                 ];
                 setLines(builtLines);
@@ -182,7 +181,7 @@ export default function ExplorePage({ currentAge }) {
     }
 
     const markers = [];
-    if (crossoverYear !== null && crossoverYear !== undefined) {
+    if (crossoverYear !== null && crossoverYear !== undefined && crossoverYear > 0) {
         markers.push({ year: crossoverYear, label: 'Crossover' });
     }
     for (const { hits } of wealthHitsByLine) {
@@ -199,7 +198,7 @@ export default function ExplorePage({ currentAge }) {
         <div>
             <p className="page-title">Explore</p>
             <p className="page-description">
-                Compare financial paths side by side — savings against securities, one plan against
+                Compare financial paths side by side: savings against securities, one plan against
                 another, or starting now against waiting. Adjust anything on the left and the chart
                 updates as you go.
             </p>
@@ -236,8 +235,6 @@ export default function ExplorePage({ currentAge }) {
                             <div key={`stats-${resultVersion}`}>
                                 <StatRow lines={lines} />
                             </div>
-
-                            <InsightStrip insights={insights} />
 
                             <div key={`chart-${resultVersion}`} className="chart-wrap">
                                 <LedgerChart

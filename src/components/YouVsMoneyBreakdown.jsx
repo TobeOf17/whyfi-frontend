@@ -11,7 +11,7 @@ export default function YouVsMoneyBreakdown({ breakdown, lineLabel }) {
 
     return (
         <div className="highlight-section">
-            <p className="section-label">You vs. your money — {lineLabel}</p>
+            <p className="section-label">You vs. your money: {lineLabel}</p>
             <h3 className="highlight-section__title">
                 {Math.round(growthPct)}% of this balance is growth, not money you put in
             </h3>

@@ -1,8 +1,8 @@
 import { formatCurrency } from '../services/formatters.js';
 
 const PRINCIPLES = {
-    securities: 'Risk and return move together — but time shrinks the gap',
-    breakeven: 'Every plan has a break-even point — find it before you commit',
+    securities: 'Risk and return move together, but time shrinks the gap',
+    breakeven: 'Every plan has a break-even point, find it before you commit',
     timing: 'Time in the market usually beats timing the market'
 };
 
@@ -24,22 +24,22 @@ export default function Lesson({ mode, lines, crossoverYear, totalYears, waitYea
             {mode === 'timing' ? (
                 <p>
                     Waiting <strong>{waitYears} years</strong> to start costs <strong>{formatCurrency(gap)}</strong> by
-                    year {totalYears} — not because the delayed plan performs worse, but because it has fewer years
+                    year {totalYears}, not because the delayed plan performs worse, but because it has fewer years
                     for growth to compound on top of growth. The lost years at the start are worth more than the
                     same years at the end.
                 </p>
-            ) : crossoverYear !== null && crossoverYear !== undefined && crossoverYear <= totalYears ? (
+            ) : crossoverYear !== null && crossoverYear !== undefined && crossoverYear > 0 && crossoverYear <= totalYears ? (
                 <p>
                     <strong>{leader.label}</strong> overtakes <strong>{trailer.label}</strong> around{' '}
-                    <strong>year {crossoverYear}</strong>, and the gap between them keeps widening after that —
-                    it reaches <strong>{formatCurrency(gap)}</strong> by year {totalYears}. The crossover point is
+                    <strong>year {crossoverYear}</strong>, and the gap between them keeps widening after that,
+                    reaching <strong>{formatCurrency(gap)}</strong> by year {totalYears}. The crossover point is
                     the moment the decision actually pays off, not the moment it was made.
                 </p>
             ) : (
                 <p>
                     <strong>{leader.label}</strong> stays ahead of <strong>{trailer.label}</strong> for the entire{' '}
                     {totalYears}-year span, ending {formatCurrency(gap)} higher. Within this horizon, the two never
-                    converge — extending the timeline further is the only thing that could change that.
+                    converge, so extending the timeline further is the only thing that could change that.
                 </p>
             )}
         </div>
