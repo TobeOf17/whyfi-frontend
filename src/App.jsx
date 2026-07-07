@@ -15,7 +15,7 @@ export default function App() {
             <header className="header">
                 <div>
                     <p className="wordmark">Why<span>Fi</span></p>
-                    <p className="tagline">Financial time capsule</p>
+                    <p className="tagline">Investment Sandbox and Visualization</p>
                 </div>
             </header>
 
