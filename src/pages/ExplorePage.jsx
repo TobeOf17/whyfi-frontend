@@ -70,6 +70,7 @@ export default function ExplorePage({ currentAge }) {
     function finishWithLines(builtLines, primaryResult) {
         const wealthHits = builtLines.map((line) => ({
             label: line.label,
+            colorVar: line.colorVar,
             hits: findWealthMilestones(line.points)
         }));
         setWealthHitsByLine(wealthHits);
@@ -165,7 +166,7 @@ export default function ExplorePage({ currentAge }) {
 
                 const builtLines = [
                     { id: 'startnow', label: 'Start now', colorVar: 'var(--color-line-a)', points: nowPoints },
-                    { id: 'wait', label: `Wait ${waitYears} years`, colorVar: 'var(--color-line-b)', dashed: true, points: waitPoints }
+                    { id: 'wait', label: `Wait ${waitYears} years`, colorVar: 'var(--color-line-b)', dashed: true, points: waitPoints, showDelta: false }
                 ];
                 setLines(builtLines);
                 setBand(null);
@@ -184,9 +185,9 @@ export default function ExplorePage({ currentAge }) {
     if (crossoverYear !== null && crossoverYear !== undefined && crossoverYear > 0) {
         markers.push({ year: crossoverYear, label: 'Crossover' });
     }
-    for (const { hits } of wealthHitsByLine) {
+    for (const { hits, colorVar } of wealthHitsByLine) {
         for (const hit of hits) {
-            markers.push({ year: hit.year, label: formatThreshold(hit.threshold) });
+            markers.push({ year: hit.year, label: formatThreshold(hit.threshold), colorVar });
         }
     }
 
@@ -198,9 +199,7 @@ export default function ExplorePage({ currentAge }) {
         <div>
             <p className="page-title">Explore</p>
             <p className="page-description">
-                Compare financial paths side by side: savings against securities, one plan against
-                another, or starting now against waiting. Adjust anything on the left and the chart
-                updates as you go.
+                Compare financial paths side by side and see where one overtakes the other.
             </p>
 
             <ToggleBar mode={mode} onModeChange={setMode} dollarMode={dollarMode} onDollarModeChange={setDollarMode} />
