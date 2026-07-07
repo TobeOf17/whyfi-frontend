@@ -1,6 +1,6 @@
 const MODES = [
-    { id: 'securities', label: '01 Securities' },
-    { id: 'breakeven', label: '02 Break-even' },
+    { id: 'securities', label: '01 Securities vs Savings' },
+    { id: 'breakeven', label: '02 Compare' },
     { id: 'timing', label: '03 Start now vs. wait' }
 ];
 
