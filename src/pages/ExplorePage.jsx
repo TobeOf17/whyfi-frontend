@@ -26,12 +26,21 @@ const DEFAULT_SHARED_INPUT = {
 };
 
 const DEFAULT_SECURITIES_CONFIG = { savingsRatePercent: 4, stockExpectedRatePercent: 8, volatilityPercent: 5 };
-const DEFAULT_OPTION_A = { startingPrincipal: 5000, monthlyContribution: 300, annualRatePercent: 4 };
-const DEFAULT_OPTION_B = { startingPrincipal: 0, monthlyContribution: 300, annualRatePercent: 8 };
+const DEFAULT_OPTION_A = { startingPrincipal: 5000, monthlyContribution: 300, annualRatePercent: 4, annualFeePercent: 0 };
+const DEFAULT_OPTION_B = { startingPrincipal: 0, monthlyContribution: 300, annualRatePercent: 8, annualFeePercent: 0 };
 const DEFAULT_TIMING_CONFIG = { waitYears: 5, annualRatePercent: 8 };
 
 function buildInput(shared, overrides) {
     return { ...shared, annualRatePercent: 0, compoundingFrequency: 'MONTHLY', ...overrides };
+}
+
+/** Fees are modeled as a straight drag on the annual rate, never sent to the backend as their own field. */
+function effectiveOptionInput(option) {
+    return {
+        startingPrincipal: option.startingPrincipal,
+        monthlyContribution: option.monthlyContribution,
+        annualRatePercent: option.annualRatePercent - (option.annualFeePercent || 0)
+    };
 }
 
 export default function ExplorePage({ currentAge }) {
@@ -122,7 +131,7 @@ export default function ExplorePage({ currentAge }) {
         setIsLoading(true);
         setErrorMessage(null);
 
-        Promise.all([calculateScenario(buildInput(sharedInput, optionA)), calculateScenario(buildInput(sharedInput, optionB))])
+        Promise.all([calculateScenario(buildInput(sharedInput, effectiveOptionInput(optionA))), calculateScenario(buildInput(sharedInput, effectiveOptionInput(optionB)))])
             .then(([resultA, resultB]) => {
                 if (thisRequestId !== requestIdRef.current) return;
 
@@ -192,7 +201,7 @@ export default function ExplorePage({ currentAge }) {
     }
 
     const insights = lines.length
-        ? buildInsights({ mode, lines, band, crossoverYear, wealthHitsByLine, primaryBreakdown, sharedInput })
+        ? buildInsights({ mode, lines, band, crossoverYear, wealthHitsByLine, primaryBreakdown, sharedInput, optionA, optionB })
         : [];
 
     return (

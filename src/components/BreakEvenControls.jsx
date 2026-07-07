@@ -1,4 +1,5 @@
 import SliderField from './SliderField.jsx';
+import CollapsibleSection from './CollapsibleSection.jsx';
 
 function OptionBlock({ title, option, onChange }) {
     function updateField(field, value) {
@@ -38,6 +39,23 @@ function OptionBlock({ title, option, onChange }) {
                 unit="%"
                 onChange={(v) => updateField('annualRatePercent', v)}
             />
+
+            <CollapsibleSection title="Advanced assumptions">
+                <SliderField
+                    label="Annual fee"
+                    value={option.annualFeePercent ?? 0}
+                    min={0}
+                    max={3}
+                    step={0.1}
+                    unit="%"
+                    onChange={(v) => updateField('annualFeePercent', v)}
+                />
+                <p className="control-note">
+                    Modeled as a straight drag on the annual rate (rate minus fee) rather than a separate
+                    fee schedule. Simple, but it's the same mechanism a real expense ratio uses to quietly
+                    reduce compounding.
+                </p>
+            </CollapsibleSection>
         </div>
     );
 }

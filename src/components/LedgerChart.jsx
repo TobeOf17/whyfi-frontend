@@ -46,9 +46,10 @@ function bandPath(bandPoints, totalYears, maxValue) {
 
 function MilestonePill({ marker, x, y }) {
     const width = marker.label.length * 6.4 + 20;
+    const color = marker.colorVar || 'var(--color-accent-strong)';
     return (
         <g>
-            <rect x={x - width / 2} y={y - 14} width={width} height={20} rx={10} fill="var(--color-accent-strong)" />
+            <rect x={x - width / 2} y={y - 14} width={width} height={20} rx={10} fill={color} />
             <text x={x} y={y} textAnchor="middle" fontSize="10.5" fontFamily="var(--font-mono)" fill="#ffffff">
                 {marker.label}
             </text>
@@ -185,6 +186,8 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
                 {visibleMarkers.map((marker, index) => {
                     const x = xForYear(marker.year, totalYears);
                     const y = MARKER_TOP_Y + levelForMarker(marker.label) * MARKER_ROW_HEIGHT;
+                    const tickColor = marker.colorVar || 'var(--color-accent-strong)';
+                    const displayLabel = currentAge != null ? `${marker.label} \u00b7 Age ${currentAge + marker.year}` : marker.label;
                     return (
                         <g key={`${marker.label}-${index}`}>
                             <line
@@ -192,11 +195,11 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
                                 x2={x}
                                 y1={PAD.top}
                                 y2={PAD.top + PLOT_HEIGHT}
-                                stroke="var(--color-accent-strong)"
+                                stroke={tickColor}
                                 strokeWidth="1.5"
                                 strokeDasharray="3,3"
                             />
-                            <MilestonePill marker={marker} x={x} y={y} />
+                            <MilestonePill marker={{ ...marker, label: displayLabel }} x={x} y={y} />
                         </g>
                     );
                 })}

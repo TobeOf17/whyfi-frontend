@@ -6,7 +6,7 @@ import { formatThreshold } from './wealthMilestones.js';
  * applies, returns a sentence. Rules are intentionally simple and legible —
  * this is meant to be easy to audit and extend, not a black box.
  */
-export function buildInsights({ mode, lines, band, crossoverYear, wealthHitsByLine, primaryBreakdown, sharedInput }) {
+export function buildInsights({ mode, lines, band, crossoverYear, wealthHitsByLine, primaryBreakdown, sharedInput, optionA, optionB }) {
     const insights = [];
     const [lineA, lineB] = lines;
 
@@ -54,6 +54,17 @@ export function buildInsights({ mode, lines, band, crossoverYear, wealthHitsByLi
         for (const { label, hits } of wealthHitsByLine) {
             for (const hit of hits) {
                 insights.push(`${label} crosses ${formatThreshold(hit.threshold)} in year ${hit.year}.`);
+            }
+        }
+    }
+
+    if (mode === 'breakeven' && optionA && optionB) {
+        for (const [label, option] of [['Option A', optionA], ['Option B', optionB]]) {
+            if (option.annualFeePercent > 0) {
+                const effective = option.annualRatePercent - option.annualFeePercent;
+                insights.push(
+                    `${label}'s ${option.annualFeePercent}% fee drags its effective return from ${option.annualRatePercent}% to ${effective.toFixed(1)}%.`
+                );
             }
         }
     }
