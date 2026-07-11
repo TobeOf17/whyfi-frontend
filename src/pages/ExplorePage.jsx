@@ -17,7 +17,10 @@ import FeeImpact from '../components/FeeImpact.jsx';
 import LiveInsights from '../components/LiveInsights.jsx';
 import Lesson from '../components/Lesson.jsx';
 
-const DEBOUNCE_MS = 300;
+// Calculations are local now (no network round-trip), so this debounce
+// exists only to avoid recalculating on every single pixel of a slider
+// drag — not to protect a backend from load, like it used to.
+const DEBOUNCE_MS = 60;
 
 const DEFAULT_SHARED_INPUT = {
     startingPrincipal: 5000,

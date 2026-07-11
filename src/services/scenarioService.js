@@ -1,14 +1,13 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+import { calculate } from './calculationEngine.js';
 
+/**
+ * Same async signature as the old fetch-based version, so ExplorePage and
+ * everything else calling this doesn't need to change at all — only the
+ * implementation underneath moved from a network call to a local
+ * calculation. Wrapped in Promise.resolve so a stray synchronous throw
+ * (e.g. a malformed input) still surfaces through the existing .catch()
+ * chains callers already have, rather than as an uncaught exception.
+ */
 export async function calculateScenario(input) {
-  const response = await fetch(`${API_BASE}/api/v1/scenarios/calculate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input)
-  });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    throw new Error(body.detail || 'Calculation failed.');
-  }
-  return response.json();
+  return Promise.resolve().then(() => calculate(input));
 }
