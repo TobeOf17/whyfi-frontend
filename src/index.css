@@ -1003,7 +1003,6 @@ body {
   color: var(--color-negative);
 }
 
-/* ---- mobile fixes: append to the end of your existing index.css ---- */
 
 .chart-svg {
   touch-action: none;
@@ -1042,7 +1041,6 @@ body {
   }
 }
 
-/* ---- definitive mobile layout fix: append to the END of index.css ---- */
 
 @media (max-width: 900px) {
   .layout {
