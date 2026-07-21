@@ -1061,3 +1061,95 @@ body {
 .card--spaced {
   margin-bottom: var(--gap-lg);
 }
+
+/* ---- mobile spread & polish: append to the END of index.css ---- */
+
+@media (max-width: 600px) {
+  /* Natural side margins instead of edge-to-edge, and safe-area support
+     for the iPhone notch/Dynamic Island (top) and home indicator (bottom).
+     Falls back to plain padding on devices/browsers without env() support. */
+  .app {
+    padding-left: max(18px, env(safe-area-inset-left));
+    padding-right: max(18px, env(safe-area-inset-right));
+    padding-top: calc(14px + env(safe-area-inset-top));
+    padding-bottom: calc(48px + env(safe-area-inset-bottom));
+  }
+
+  .chart-wrap {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  /* Mode tabs (01/02/03) become a full-width vertical stack instead of
+     wrapping awkwardly — the Nominal/Real toggle-group is untouched since
+     it already fits cleanly at two items. */
+  .toggle-group--modes {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius);
+  }
+
+  .toggle-group--modes .toggle {
+    width: 100%;
+    text-align: left;
+    padding: 13px 16px;
+    font-size: 13.5px;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border-strong);
+    min-height: 44px;
+  }
+
+  .toggle-group--modes .toggle:last-child {
+    border-bottom: none;
+  }
+
+  /* Bigger touch targets throughout — 44px is the standard iOS/Android
+     minimum comfortable tap target size. */
+  .slider::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  .slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  .slider {
+    height: 6px;
+    margin: 10px 0;
+  }
+
+  .control-textbox {
+    min-height: 40px;
+    font-size: 15px;
+    width: 76px;
+  }
+
+  .toggle {
+    min-height: 44px;
+  }
+
+  .whatif-chip {
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+
+  .back-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* More breathing room between stacked control rows */
+  .control-row {
+    margin-bottom: 22px;
+  }
+
+  .page-description {
+    margin-bottom: 18px;
+  }
+}

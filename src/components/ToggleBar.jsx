@@ -7,7 +7,7 @@ const MODES = [
 export default function ToggleBar({ mode, onModeChange, dollarMode, onDollarModeChange }) {
     return (
         <div className="toggle-row">
-            <div className="toggle-group">
+            <div className="toggle-group toggle-group--modes">
                 {MODES.map((m) => (
                     <button
                         key={m.id}
