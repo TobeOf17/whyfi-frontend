@@ -2,15 +2,30 @@ import { useEffect, useRef, useState } from 'react';
 import { formatCurrency } from '../services/formatters.js';
 
 const WIDTH = 900;
-const HEIGHT = 420;
 const MARKER_ROW_HEIGHT_BASE = 18;
 const MARKER_TOP_Y_BASE = 18;
 
-// Clamp how far the text/stroke compensation factor can swing, so a
-// transient 0-width measurement during layout (or an absurdly wide
-// monitor) can't produce nonsensical sizing.
 const MIN_SCALE = 0.55;
 const MAX_SCALE = 3.5;
+
+// Aspect ratio (height / width) at the wide end stays the familiar
+// landscape chart shape. At the narrow end (phones) it swings toward
+// portrait — taller than it is wide — so the chart gets real vertical
+// presence instead of shrinking into a squashed horizontal strip.
+// In between, it interpolates smoothly rather than snapping at a
+// breakpoint, so resizing a window doesn't visibly jump.
+const WIDE_BREAKPOINT = 700;
+const NARROW_BREAKPOINT = 380;
+const WIDE_RATIO = 420 / 900; // ~0.467 — the original landscape shape
+const NARROW_RATIO = 1.15; // taller than wide, genuinely portrait
+
+function computeHeight(renderedWidth) {
+    if (renderedWidth >= WIDE_BREAKPOINT) return WIDTH * WIDE_RATIO;
+    if (renderedWidth <= NARROW_BREAKPOINT) return WIDTH * NARROW_RATIO;
+    const t = (renderedWidth - NARROW_BREAKPOINT) / (WIDE_BREAKPOINT - NARROW_BREAKPOINT);
+    const ratio = NARROW_RATIO + (WIDE_RATIO - NARROW_RATIO) * t;
+    return WIDTH * ratio;
+}
 
 function xForYear(year, totalYears, plotWidth, padLeft) {
     return padLeft + (year / totalYears) * plotWidth;
@@ -46,16 +61,6 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
     const [hoverYear, setHoverYear] = useState(null);
     const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
-    // Text and stroke weight inside the SVG are defined in the chart's fixed
-    // internal coordinate system (900 units wide). Without compensation, that
-    // system gets uniformly squeezed on a narrow phone screen exactly the way
-    // the plotted lines do, and an 11-unit axis label that reads fine at
-    // ~860px physical width renders at roughly 4px on a 320px phone,
-    // unreadable. `su()` (scaled-unit) computes how many internal units are
-    // needed for a given target to stay a constant physical pixel size
-    // regardless of how wide the container actually is. Geometry (line
-    // paths, gridline positions) is untouched by this — only decorative
-    // sizing (font size, stroke width, pill dimensions) runs through it.
     useEffect(() => {
         if (!wrapRef.current) return undefined;
         const observer = new ResizeObserver((entries) => {
@@ -66,6 +71,8 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
         observer.observe(wrapRef.current);
         return () => observer.disconnect();
     }, []);
+
+    const HEIGHT = computeHeight(renderedWidth);
 
     const rawScale = WIDTH / Math.max(renderedWidth, 1);
     const scale = Math.min(Math.max(rawScale, MIN_SCALE), MAX_SCALE);
@@ -84,7 +91,6 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
     const maxValue = Math.max(...allValues, 1) * 1.08;
 
     const gridLevels = [0, 0.25, 0.5, 0.75, 1];
-    // Fewer x-axis labels on a narrow phone screen so they don't collide.
     const isNarrow = renderedWidth < 420;
     const yearTickStep = Math.max(1, Math.round(totalYears / (isNarrow ? 4 : 6)));
     const yearTicks = (lines[0]?.points ?? [])
@@ -150,7 +156,7 @@ export default function LedgerChart({ lines, band, markers = [], totalYears, cur
             </div>
 
             <svg
-                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                viewBox={`0 0 ${WIDTH} ${HEIGHT.toFixed(1)}`}
                 width="100%"
                 role="img"
                 aria-label="Comparison chart of projected account values over time, with milestone markers. Touch or hover to see exact values."
