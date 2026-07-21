@@ -15,7 +15,7 @@ export default function MyPlanPage({ profile, onChange }) {
                 life instead of an abstract year count.
             </p>
 
-            <div className="card">
+            <div className="card card--spaced">
                 <SliderField
                     label="Your current age"
                     value={profile.currentAge}

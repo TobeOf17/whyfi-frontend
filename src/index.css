@@ -1002,3 +1002,64 @@ body {
   font-size: 18px;
   color: var(--color-negative);
 }
+
+/* ---- mobile fixes: append to the end of your existing index.css ---- */
+
+.chart-svg {
+  touch-action: none;
+}
+
+@media (max-width: 600px) {
+  .app {
+    padding-left: var(--gap-sm);
+    padding-right: var(--gap-sm);
+  }
+
+  .chart-wrap {
+    padding: var(--gap-sm);
+  }
+
+  .toggle-group {
+    flex-wrap: wrap;
+  }
+
+  .toggle {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .page-title {
+    font-size: 19px;
+  }
+
+  .stat__value {
+    font-size: 23px;
+  }
+
+  .chart-tooltip {
+    font-size: 10.5px;
+    padding: 6px 8px;
+  }
+}
+
+/* ---- definitive mobile layout fix: append to the END of index.css ---- */
+
+@media (max-width: 900px) {
+  .layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xl);
+  }
+
+  .panel {
+    position: static;
+    top: auto;
+    align-self: auto;
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+
+.card--spaced {
+  margin-bottom: var(--gap-lg);
+}
