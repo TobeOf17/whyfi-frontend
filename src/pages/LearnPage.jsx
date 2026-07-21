@@ -1,6 +1,6 @@
 const ENTRIES = [
     {
-        term: 'Compound interest',
+        term: 'Compoound interest',
         def: 'Interest earned on both your original money and on the interest it already earned. Small early amounts matter disproportionately because they have the most time to compound on top of themselves.'
     },
     {
